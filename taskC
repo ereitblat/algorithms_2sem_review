@@ -1,0 +1,29 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
+public class C {
+
+  public static void main(String[] args) throws IOException {
+    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+    String[] num = bufferedReader.readLine().split(" ");
+    int n = Integer.parseInt(num[0]);
+    int k = Integer.parseInt(num[1]);
+    if (k == 0 && (n != 1)) {
+      System.out.println(-1);
+    } else {
+      ArrayList<int[]> dp = new ArrayList<>();
+      dp.add(new int[k + 1]);
+      int i = 0;
+      while (dp.get(i)[k] < n - 1) {
+        i += 1;
+        dp.add(new int[k + 1]);
+        for (int j = 1; j < k + 1; j++) {
+          dp.get(i)[j] = dp.get(i - 1)[j] + dp.get(i - 1)[j - 1] + 1;
+        }
+      }
+      System.out.println(i);
+    }
+  }
+}
