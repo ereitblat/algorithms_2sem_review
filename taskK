@@ -1,0 +1,60 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
+class Main {
+
+  public static void main(String[] args) throws IOException {
+    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+    String[] num = bufferedReader.readLine().split(" ");
+    int n = Integer.parseInt(num[0]);
+    int m = Integer.parseInt(num[1]);
+    int[][] dp = new int[n][m + 1];
+    String[] tempWeight = bufferedReader.readLine().split(" ");
+    String[] tempCosts = bufferedReader.readLine().split(" ");
+    int[] weight = new int[n];
+    int[] costs = new int[n];
+    for (int i = 0; i < n; i++) {
+      weight[i] = Integer.parseInt(tempWeight[i]);
+      costs[i] = Integer.parseInt(tempCosts[i]);
+    }
+    for (int i = 0; i < n; i++) {
+      if (i == 0) {
+        if (weight[0] <= m) {
+          dp[0][weight[0]] = costs[0];
+        }
+      } else {
+        for (int x = 0; x < m + 1; x++) {
+          if (x < weight[i]) {
+            dp[i][x] = dp[i - 1][x];
+          } else {
+            dp[i][x] = Math.max(dp[i - 1][x - weight[i]] + costs[i], dp[i - 1][x]);
+          }
+        }
+      }
+    }
+    int maxim = 0;
+    int finalX = -1;
+    for (int x = 0; x < m + 1; x++) {
+      if (maxim < dp[n - 1][x]) {
+        maxim = dp[n - 1][x];
+        finalX = x;
+      }
+    }
+    ArrayList answer = new ArrayList<Integer>();
+    int index = n - 1;
+    while (finalX > 0) {
+      if (index != 0 && dp[index - 1][finalX] == dp[index][finalX]) {
+        index -= 1;
+      } else {
+        index -= 1;
+        finalX -= weight[index + 1];
+        answer.add(index + 2);
+      }
+    }
+    for (int i = answer.size() - 1; i >= 0; i--) {
+      System.out.println(answer.get(i));
+    }
+  }
+}
