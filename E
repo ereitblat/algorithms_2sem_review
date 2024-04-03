@@ -1,0 +1,80 @@
+import java.io.*;
+import java.util.ArrayList;
+
+public class Main {
+  public static ArrayList<Integer> answer = new ArrayList<Integer>();
+  public static int timer = 0;
+
+  public static void dfs(
+      int v,
+      boolean[] used,
+      int[] tin,
+      int[] ret,
+      ArrayList<int[]>[] graph,
+      boolean[] usedEdgeBool,
+      boolean[] ansbool) {
+    tin[v] = timer++;
+    ret[v] = tin[v];
+    used[v] = true;
+    int size = graph[v].size();
+    for (int i = 0; i < size; i++) {
+      int to = graph[v].get(i)[0];
+      if (usedEdgeBool[graph[v].get(i)[1]]) {
+        continue;
+      }
+      usedEdgeBool[graph[v].get(i)[1]] = true;
+      if (!used[to]) {
+        dfs(to, used, tin, ret, graph, usedEdgeBool, ansbool);
+        ret[v] = Math.min(ret[v], ret[to]);
+        if (ret[to] == tin[to]) {
+          answer.add(graph[v].get(i)[1]);
+          ansbool[graph[v].get(i)[1]] = true;
+        }
+      } else {
+        ret[v] = Math.min(ret[v], tin[to]);
+      }
+    }
+  }
+
+  public static void main(String[] args) throws IOException {
+    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+    OutputStream outputStream = System.out;
+    PrintWriter out = new PrintWriter(outputStream);
+    String[] num = bufferedReader.readLine().split(" ");
+    int n = Integer.parseInt(num[0]);
+    int m = Integer.parseInt(num[1]);
+    ArrayList<int[]>[] graph = new ArrayList[n];
+    for (int i = 0; i < n; i++) {
+      graph[i] = new ArrayList<>();
+    }
+    for (int i = 0; i < m; i++) {
+      String[] curr = bufferedReader.readLine().split(" ");
+      int[] pair = new int[2];
+      pair[0] = Integer.parseInt(curr[1]) - 1;
+      pair[1] = i;
+      int[] pair2 = new int[2];
+      pair2[0] = Integer.parseInt(curr[0]) - 1;
+      pair2[1] = i;
+      graph[Integer.parseInt(curr[0]) - 1].add(pair);
+      graph[Integer.parseInt(curr[1]) - 1].add(pair2);
+    }
+    boolean[] used = new boolean[n];
+    boolean[] usedEdgeBool = new boolean[m];
+    int[] tin = new int[n];
+    int timer = 0;
+    int[] ret = new int[n];
+    boolean[] ansbool = new boolean[m];
+    for (int v = 0; v < n; v++) {
+      if (!used[v]) {
+        int[] parent = new int[n];
+        dfs(v, used, tin, ret, graph, usedEdgeBool, ansbool);
+      }
+    }
+    System.out.println(answer.size());
+    for (int i = 0; i < m; i++) {
+      if (ansbool[i]) {
+        System.out.println(i + 1 + " ");
+      }
+    }
+  }
+}
