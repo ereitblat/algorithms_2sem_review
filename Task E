@@ -1,0 +1,62 @@
+import java.io.*;
+import java.util.ArrayList;
+
+public class Main {
+  public static void main(String[] args) throws IOException {
+    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+    OutputStream outputStream = System.out;
+    PrintWriter out = new PrintWriter(outputStream);
+    String[] num = bufferedReader.readLine().split(" ");
+    int n = Integer.parseInt(num[0]);
+    ArrayList<int[]> graph = new ArrayList<>();
+    for (int i = 0; i < n; i++) {
+      String[] str = bufferedReader.readLine().split(" ");
+      for (int j = 0; j < n; j++) {
+        if (Integer.parseInt(str[j]) < 100000) {
+          int[] edge = {i, j, Integer.parseInt(str[j])};
+          graph.add(edge);
+        }
+      }
+    }
+    int flag = -1;
+    int[] dp = new int[n];
+    for (int i = 0; i < n; i++) {
+      dp[i] = 100000;
+    }
+    dp[0] = 0;
+    int[] parents = new int[n];
+    int m = graph.size();
+    for (int i = 0; i < n + 1; i++) {
+      flag = -1;
+      for (int j = 0; j < m; j++) {
+        if (dp[graph.get(j)[0]] + graph.get(j)[2] < dp[graph.get(j)[1]]) {
+          dp[graph.get(j)[1]] = dp[graph.get(j)[0]] + graph.get(j)[2];
+          flag = graph.get(j)[1];
+          parents[flag] = graph.get(j)[0];
+        }
+      }
+    }
+    if (flag == -1) {
+      System.out.println("NO");
+    } else {
+      System.out.println("YES");
+      for (int i = 0; i < n - 1; i++) {
+        flag = parents[flag];
+      }
+      int current = flag;
+      ArrayList<Integer> vertexes = new ArrayList<>();
+      vertexes.add(current);
+      while (true) {
+        current = parents[current];
+        vertexes.add(current);
+        if (current == flag) {
+          break;
+        }
+      }
+      System.out.println(vertexes.size());
+      for (int i = vertexes.size() - 1; i >= 0; i--) {
+        System.out.print(vertexes.get(i) + 1 + " ");
+      }
+    }
+  }
+}
